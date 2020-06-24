@@ -1,0 +1,172 @@
+<!doctype html> 
+<html lang="en"> 
+<head> 
+    <meta charset="UTF-8" />
+    <title>Expand Your Area</title>
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.11.0/dist/phaser.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+        div.absolute {
+          position: absolute;
+          top: 80px;
+          right: 200px;
+          width: 200px;
+          height: 500px;
+          border: 3px solid #0b96d6;
+        }
+    </style>
+</head>
+<body>
+
+<script type="text/javascript">
+
+    var config = {
+        type: Phaser.AUTO,
+        width: 800,
+        height: 600,
+        physics :{
+          default:'arcade',
+          arcade :{
+               gravity:{y : 0},
+               debug : false,
+          }
+     },
+        scene: {
+            preload: preload,
+            create: create,
+            update: update
+        }
+    };
+    var player;
+    var cursors;
+    var star;
+    var size = 1 ;
+    var bomb;
+    var score = 0;
+    var Gameover = false;
+    var scoreText ;
+    var finalmessage;
+     game = new Phaser.Game(config);
+
+    function preload ()
+    {
+
+     
+     this.load.image('sky','assets/sky.png');
+     this.load.image('dude', 'assets/rainbow.png');
+     this.load.image('bomb', 'assets/bomb.png');
+     this.load.image('star', 'assets/star.png');
+     
+
+    }
+
+    function create ()
+    {
+     this.add.image(400,300,'sky');
+     
+     player = this.physics.add.sprite(100,100,'dude')
+     player.setScale(size);
+     scoreText = this.add.text(16,16,'score: 0',{fontSize:'32px',fill:'#000'});
+     finalmessage = this.add.text(200,200,'',{fontSize:'50px',fill:'#000'});
+     player.setCollideWorldBounds(true);
+     star = this.physics.add.staticGroup();
+     star.create(400,568,'star'); 
+
+     bomb = this.physics.add.staticGroup();
+     bomb.create(500,500,'bomb');
+
+     this.physics.add.overlap(player,star,makemebig,null,this);
+     this.physics.add.overlap(player,bomb,makesmall,null,this);
+     
+     cursors = this.input.keyboard.createCursorKeys();
+
+    }
+    function generateRandom(x,y) {
+     var num = Math.floor(Math.random()*650);
+     return (num === x  || num === y) ? generateRandom(x,y) : num;
+ }
+
+    function creatrstarandbomb(x,y){
+     star.create(generateRandom(x,y),generateRandom(x,y) ,'star');
+     bomb.create(generateRandom(x,y),generateRandom(x,y),'bomb');
+
+     
+    }
+
+    function gameover(){
+     
+     finalmessage.setText('Game over');
+    }
+   
+    function update ()
+    {
+
+          if (Gameover){
+              gameover();
+               return;
+          }
+         if(cursors.right.isDown){
+          player.setVelocityX(160);
+         }
+         else if(cursors.left.isDown){
+              player.setVelocityX(-160);
+         }
+         else if(cursors.up.isDown){
+              player.setVelocityY(-160);
+         }
+         else if(cursors.down.isDown){
+              player.setVelocityY(160);
+         }
+         else{
+              player.setVelocityX(0);
+              player.setVelocityY(0);
+         }
+    }
+
+    function makemebig(player,star){
+         star.disableBody(true,true);
+         size += 0.1;
+         score += 10
+         player.setScale(size);
+         if(player.getScale < 0){
+              Gameover = true;
+         }
+         scoreText.setText('score:'+score);
+
+         creatrstarandbomb(player.x *100 ,player.y * 100);
+
+
+    }
+
+    function makesmall(player,bomb){
+         bomb.disableBody(true,true);
+         size -= 0.1;
+         
+         score -= 15
+         if(score < 0){
+              Gameover = true;
+         }
+         player.setScale(size);
+         scoreText.setText('score:'+score);
+
+         creatrstarandbomb(player.x * 100 ,player.y * 100);
+    }
+
+</script>
+
+<div class="absolute"><h3>Expand Your Area</h3><br>
+     <p>Simple game built uding JS and Phaser framework </p>
+     <h4>how to play:</h4>
+     <ul>
+          <li>move the block box using arrows</li>
+          <li>collect stars, it will increase the score and size of box</li>
+          <li>bomb's will reduce the size and score</li>
+          <li>try to make highest score</li>
+     </ul>
+
+</div>
+
+</body>
+</html>
