@@ -6,11 +6,30 @@
     <script src="//cdn.jsdelivr.net/npm/phaser@3.11.0/dist/phaser.js"></script>
     <style type="text/css">
         body {
-            margin: 0;
+            margin: 10;
+            
+
+            
         }
+        .input{
+          position: absolute;
+     
+          right: 200px;
+          width: 200px;
+          height: 200px;
+        }
+        .scorebord{
+          position: absolute;
+     
+          left: 730px;
+          width: 200px;
+          height: 200px;
+
+        }
+        
         div.absolute {
           position: absolute;
-          top: 80px;
+          top: 100px;
           right: 200px;
           width: 200px;
           height: 500px;
@@ -48,7 +67,10 @@
     var Gameover = false;
     var scoreText ;
     var finalmessage;
+    var maxScore = 0;
+    var maxScoretext;
      game = new Phaser.Game(config);
+     
 
     function preload ()
     {
@@ -69,8 +91,10 @@
      player = this.physics.add.sprite(100,100,'dude')
      player.setScale(size);
      scoreText = this.add.text(16,16,'score: 0',{fontSize:'32px',fill:'#000'});
+     maxScoretext = this.add.text(18,50,'prev MaxScore: '+Math.max(localStorage.getItem("score"),score),{fontSize:'32px',fill:'#000'});
      finalmessage = this.add.text(200,200,'',{fontSize:'50px',fill:'#000'});
-     player.setCollideWorldBounds(true);
+
+     //player.setCollideWorldBounds(true);
      star = this.physics.add.staticGroup();
      star.create(400,568,'star'); 
 
@@ -84,7 +108,7 @@
 
     }
     function generateRandom(x,y) {
-     var num = Math.floor(Math.random()*650);
+     var num = Math.floor(Math.random()*600);
      return (num === x  || num === y) ? generateRandom(x,y) : num;
  }
 
@@ -102,8 +126,18 @@
    
     function update ()
     {
-
+     console.log(localStorage.getItem("score"));
+     maxScore = Math.max(maxScore,score);
+     var temp = localStorage.getItem("score")
+     if (maxScore <= temp){
+          maxScore = temp
+     }
+     localStorage.setItem("score", maxScore);
+     //maxScoretext.setText('prev MaxScore: '+localStorage.getItem("score"));
           if (Gameover){
+          
+          
+          
               gameover();
                return;
           }
@@ -150,11 +184,28 @@
          }
          player.setScale(size);
          scoreText.setText('score:'+score);
+         
 
          creatrstarandbomb(player.x * 100 ,player.y * 100);
     }
 
 </script>
+<div class="input" >
+     enter your name<input type="text" name="playername" id="playername" disabled>
+     
+     
+     <button onclick="restart()">ok</button><br>
+     <button onClick="window.location.reload();">Restart Game</button>
+
+</div>
+
+<div class = "scorebord" id="scorebord">
+    
+   
+
+</div>
+
+
 
 <div class="absolute"><h3>Expand Your Area</h3><br>
      <p>Simple game built uding JS and Phaser framework </p>
@@ -168,5 +219,13 @@
 
 </div>
 
+
+
 </body>
+
+
+
+
+
+
 </html>
